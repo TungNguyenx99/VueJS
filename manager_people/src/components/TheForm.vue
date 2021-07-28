@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from "uuid";
 import { required, digits, email, max, regex } from "vee-validate/dist/rules";
 import {
   extend,
@@ -116,7 +117,10 @@ export default {
     sex: null,
     items: ["Male", "Female"],
   }),
-  mounted(){
+  created(){
+    this.assignValues()
+  },
+  mounted() {
     console.log(this.personEdit);
   },
   methods: {
@@ -124,7 +128,7 @@ export default {
       if (!this.edit) {
         this.$refs.observer.validate();
         const formData = {
-          id:this.$store.getters["people/countPeople"].toString(),
+          id: uuidv4(),
           name: this.name,
           age: this.age,
           address: this.address,
@@ -137,15 +141,14 @@ export default {
         console.log(this.personEdit.id);
         this.$store.dispatch("people/deletePerson", this.personEdit.id);
         const formData = {
-          id:this.personEdit.id,
+          id: this.personEdit.id,
           name: this.name,
           age: this.age,
           address: this.address,
           sex: this.sex,
         };
-        this.$store.dispatch('people/addPerson',formData);
+        this.$store.dispatch("people/addPerson", formData);
         console.log(formData);
-
       }
     },
 
@@ -155,6 +158,13 @@ export default {
       this.address = "";
       this.select = null;
       this.$refs.observer.reset();
+    },
+    async assignValues() {
+      await this.$nextTick;
+      this.name = this.personEdit.name;
+      this.age = this.personEdit.age;
+      this.address = this.personEdit.address;
+      this.sex = this.personEdit.sex;
     },
   },
 };
